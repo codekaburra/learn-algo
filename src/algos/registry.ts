@@ -4,6 +4,13 @@
 import type { AlgoModule, Category } from './types';
 
 import bubble from './sorting/bubble';
+import selection from './sorting/selection';
+import insertion from './sorting/insertion';
+import merge from './sorting/merge';
+import quick from './sorting/quick';
+import heap from './sorting/heap';
+import counting from './sorting/counting';
+import radix from './sorting/radix';
 import binarySearch from './searching/binary-search';
 import reverseLinkedList from './linked-list/reverse-linked-list';
 import dijkstra from './graphs/dijkstra';
@@ -25,6 +32,13 @@ export const CATEGORY_ORDER: Category[] = [
 
 export const modules: AlgoModule[] = [
   bubble,
+  selection,
+  insertion,
+  merge,
+  quick,
+  heap,
+  counting,
+  radix,
   binarySearch,
   reverseLinkedList,
   dijkstra,
