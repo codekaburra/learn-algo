@@ -38,18 +38,29 @@ The category accent tints its cards (border glow on hover), the algorithm page h
 the default element color in that category's visualizations.
 
 ### Animation state colors (used inside every visualization, consistent site-wide)
-| State | Color | Meaning |
-|---|---|---|
-| `--el-idle` | category accent at 55% saturation | untouched element |
-| `--el-active` | `#facc15` yellow + glow | currently being read/compared |
-| `--el-compare` | `#f97316` orange + glow | second element in a comparison |
-| `--el-swap` | `#f43f5e` red, brief flash | elements mid-swap |
-| `--el-sorted` | `#22c55e` green | finalized / in correct place |
-| `--el-pointer` | white ring / chevron | pointer markers (i, j, lo, hi, slow, fast) |
-| `--el-visited` | dimmed accent 35% | visited (graphs/trees) |
-| `--el-path` | `#facc15` yellow trail | discovered path / answer |
 
-**Rule: same state = same color on every page.** The user learns the color language once.
+Every state token maps 1:1 to a protocol mark/flash state (ARCHITECTURE.md Layer 3).
+
+| State | Color | Second channel | Meaning |
+|---|---|---|---|
+| `--el-idle` | category accent at 55% saturation | — | untouched element |
+| `--el-active` | `#facc15` yellow | pulsing glow | currently being read/compared |
+| `--el-compare` | `#f97316` orange | glow | second element in a comparison |
+| `--el-swap` | `#f43f5e` rose | brief flash, always paired with swap motion | elements mid-swap |
+| `--el-error` | `#dc2626` crimson | shake + ✕ glyph, persists until cleared | mismatch / conflict / invalid (parenthesis mismatch, queen conflict) |
+| `--el-sorted` | `#22c55e` green | — | finalized / in correct place |
+| `--el-pointer` | white | ring + chevron + name label | pointer markers (i, j, lo, hi, slow, fast) |
+| `--el-visited` | dimmed accent 35% | reduced opacity | visited (graphs/trees) |
+| `--el-discard` | dimmed accent 20% | desaturated + shrunk 0.92 | eliminated from consideration (binary search halves) |
+| `--el-path` | `#facc15` yellow | solid outline ring + connecting trail line | discovered path / final answer |
+
+**Rules:**
+- Same state = same color on every page. The user learns the color language once.
+- **Red family is split**: `--el-swap` (rose, transient, motion-paired) vs `--el-error`
+  (crimson, persistent, shake + ✕). Never use one for the other's meaning.
+- `--el-active` and `--el-path` share yellow but never appear ambiguously: active is a
+  transient glow pulse on one element; path is a persistent outline + trail across many.
+  The second channel, not the hue, is the discriminator — this also covers color-blind users.
 
 ## 2. Glassmorphism recipe
 
@@ -83,10 +94,15 @@ box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
 - **Swap** choreography: both elements lift (scale 1.08, brighten), glide past each other in
   arcs (one over, one under), settle with a tiny 1.02 bounce.
 - **Pointer moves**: pointers slide (not jump) to the next index, 180ms.
-- Speed slider scales all durations; at max speed (4×) drop glows and arcs, keep only
-  position changes, so it remains readable and cheap.
+- Speed slider scales all durations; at ≥ 2× drop glows and arcs, keep only position
+  changes, so it remains readable and cheap. The player's logical cursor never advances
+  before the current frame's animation completes, at any speed.
 - Playback controls are icon buttons in a glass pill bar; active state uses category accent.
-- Respect `prefers-reduced-motion`: switch to instant state changes with color-only feedback.
+- **Never autoplay.** Pages load paused at frame 0; the Play button gets a subtle
+  attention pulse instead. (Motion the user didn't request is disorienting and hostile
+  under screen readers.)
+- Respect `prefers-reduced-motion`: discrete state changes, no positional animation,
+  color/label feedback only; default speed steps down one notch.
 
 ## 5. Layout
 
@@ -100,6 +116,10 @@ box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
 - Responsive card grid (min card 260px). Card: algorithm name, tiny static preview glyph
   (SVG thumbnail of the data shape), difficulty dot (green/amber/red), complexity badge
   (`O(n log n)` in mono), category-colored left border.
+
+Tablet (≤ 1024px): code + state panels stack **below** the visualization; playback bar
+stays sticky above the fold. Touch targets throughout ≥ 44×44 px. (Phone is explicitly
+best-effort in v1 — must not break, not optimized.)
 
 ### Algorithm page (desktop)
 ```
@@ -123,6 +143,17 @@ box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
   user's recorded run. Test results strip beneath.
 
 ## 6. Accessibility
-- All state colors must also differ by a secondary channel (glow intensity, ring, icon) —
-  never color alone. Verify contrast ≥ 4.5:1 for text on glass.
+- All state colors must also differ by a secondary channel (see the state table's
+  "second channel" column) — never color alone. Verify contrast ≥ 4.5:1 for text on glass.
 - Full keyboard control of playback: Space = play/pause, ←/→ = step, ↑/↓ = speed.
+  Shortcuts are active **only when focus is outside inputs, textareas, and the Monaco
+  editor** — typing space in the editor must never toggle playback.
+- **Narration live region**: an `aria-live="polite"` region announces the current frame's
+  `note` (or a generated fallback like "compare index 3 and 4") while playing at 1× or
+  stepping. Suppressed at ≥ 2× to avoid flooding.
+- **Data-table alternative**: every visualization offers a "table view" toggle rendering
+  the current ViewState as an HTML table (collection values + marks + pointers) — the
+  non-visual equivalent of the SVG, driven by the same reducer output.
+- Focus order: nav → page header → visualization controls → code panel → explanation.
+  Skip link ("skip to controls") as first focusable. Every icon button has an
+  `aria-label`; the scrubber is a labeled `range` input announcing "frame n of m".

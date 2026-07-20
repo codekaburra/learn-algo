@@ -2,7 +2,13 @@
 
 Classification follows the common **interview-pattern taxonomy** (the same families used by
 most prep courses), because the site teaches *patterns*, not isolated tricks. Each category
-maps to one renderer (see ARCHITECTURE.md) and one accent color (see DESIGN.md).
+has a **primary renderer** (listed in its heading; some algorithms borrow another — e.g.
+Islands uses `GridView` inside the Graphs category) and one accent color (see DESIGN.md).
+There are **10 populated categories plus Greedy reserved** for expansion.
+
+Algorithms tagged **§** are *operation-sequence modules*: they animate a scripted sequence
+of operations (push/pop, insert/search, queries) rather than a single input→output run,
+using the `AlgoModule.scenario` mechanism (ARCHITECTURE.md).
 
 Difficulty: 🟢 easy · 🟡 medium · 🔴 hard.
 Build order within Phase 1–2 = table order (top categories first).
@@ -42,20 +48,20 @@ The best animations on the site; build these first to prove the engine.
 | 5 | Quick Sort | 🟡 | O(n log n) | pivot glows, partition pointers, subrange brackets |
 | 6 | Heap Sort | 🟡 | O(n log n) | sift-down bubbling in mirrored tree strip |
 | 7 | Counting Sort | 🟡 | O(n+k) | counts filling a second array, stable write-back |
-| 8 | Radix Sort (LSD) | 🟡 | O(nk) | digit-of-focus highlighted, bucket redistribution |
+| 8 | Radix Sort (LSD) | 🟡 | O(d·(n+b)), d digits, base b | digit-of-focus highlighted, bucket redistribution |
 
 ## 2. Arrays & Two Pointers — cyan · `ArrayView` (boxes)
 | # | Algorithm | Diff | Complexity | What lights up |
 |---|---|---|---|---|
 | 9 | Two Sum (sorted, two pointers) | 🟢 | O(n) | `lo`/`hi` chevrons walking inward, sum readout |
 | 10 | Reverse Array In-Place | 🟢 | O(n) | mirrored swaps meeting in the middle |
-| 11 | Valid Palindrome | 🟢 | O(n) | matching char pairs pulse green / mismatch red |
+| 11 | Valid Palindrome | 🟢 | O(n) | matching char pairs pulse green / mismatch shows error state (crimson + ✕ + shake) |
 | 12 | Move Zeroes (slow/fast) | 🟢 | O(n) | slow/fast pointers, zeroes drifting right |
 | 13 | Dutch National Flag (3-way partition) | 🟡 | O(n) | three growing colored regions |
 | 14 | Container With Most Water | 🟡 | O(n) | water area fills between bars, best-so-far ghost |
 | 15 | Sliding Window Maximum (monotonic deque) | 🔴 | O(n) | window bracket sliding, deque shown beneath |
 | 16 | Longest Substring Without Repeating Chars | 🟡 | O(n) | window grows/shrinks, duplicate flash |
-| 17 | Prefix Sum + Range Query | 🟢 | O(n) | prefix array building, range = two-value subtraction |
+| 17 | Prefix Sum + Range Query § | 🟢 | O(n) | prefix array building, range = two-value subtraction |
 | 18 | Kadane's Max Subarray | 🟡 | O(n) | running sum meter, best range trail in yellow |
 
 ## 3. Searching — emerald · `ArrayView` (boxes)
@@ -77,8 +83,8 @@ The best animations on the site; build these first to prove the engine.
 ## 5. Stack & Queue — amber · `StackQueueView`
 | # | Algorithm | Diff | Complexity | What lights up |
 |---|---|---|---|---|
-| 27 | Valid Parentheses | 🟢 | O(n) | chars push/pop, mismatch shakes red |
-| 28 | Min Stack | 🟢 | O(1)/op | twin stacks moving together |
+| 27 | Valid Parentheses | 🟢 | O(n) | chars push/pop, mismatch triggers error state (crimson + ✕ + shake) |
+| 28 | Min Stack § | 🟢 | O(1)/op | twin stacks moving together |
 | 29 | Next Greater Element (monotonic stack) | 🟡 | O(n) | pops cascade when a bigger value arrives |
 | 30 | Queue via Two Stacks | 🟢 | O(1) amort. | pour-over animation between stacks |
 
@@ -86,8 +92,8 @@ The best animations on the site; build these first to prove the engine.
 | # | Algorithm | Diff | Complexity | What lights up |
 |---|---|---|---|---|
 | 31 | BFS Level-Order Traversal | 🟢 | O(n) | levels light up as waves, queue strip below |
-| 32 | DFS Traversals (pre/in/post, tabbed) | 🟢 | O(n) | walker crawling edges, output tape builds |
-| 33 | BST Insert & Search | 🟢 | O(log n) | comparison path glows, new node drops in |
+| 32 | DFS Traversals (one module, pre/in/post mode switch) | 🟢 | O(n) | walker crawling edges, output tape builds |
+| 33 | BST Insert & Search § | 🟢 | O(log n) avg, O(n) worst | comparison path glows, new node drops in |
 | 34 | Validate BST (min/max bounds) | 🟡 | O(n) | allowed-range labels per node, violation flash |
 | 35 | Max Depth | 🟢 | O(n) | depths bubble up from leaves |
 | 36 | Invert Binary Tree | 🟢 | O(n) | subtrees swing around their parent |
@@ -120,7 +126,7 @@ The best animations on the site; build these first to prove the engine.
 ## 10. Backtracking — orange · `GridView` / `TreeView`
 | # | Algorithm | Diff | Complexity | What lights up |
 |---|---|---|---|---|
-| 50 | N-Queens | 🟡 | O(n!) | queens place, conflicts flash, backtrack rewinds |
+| 50 | N-Queens | 🟡 | O(n!) | queens place, conflicts flash error state, backtrack rewinds |
 
 ## Academic classification (textbook paradigms)
 

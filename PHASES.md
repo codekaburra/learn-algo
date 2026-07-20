@@ -1,68 +1,127 @@
 # PHASES.md — Build Roadmap
 
-Each phase ends in a deployable state. Do not start a phase before the previous one's
-exit criteria pass.
+> **This file is the single source of truth for phase scope and exit criteria.**
+> Where PLAN.md summarizes scope, this file's numbers win.
 
-## Phase 0 — Foundation (the engine before any content)
-**Goal: prove the step-event pipeline end-to-end with ONE algorithm.**
+Each phase is one branch, ends in a state that builds + type-checks + passes tests, and
+merges only when its exit criteria pass. Do not start a phase before the previous one
+merges.
 
-- Scaffold: Vite + React + TS + Tailwind; tokens.css with all DESIGN.md variables; dark
-  background with gradient blobs; glass panel component; nav bar (Academy active,
-  Exercise → "coming soon" page).
-- Implement `engine/steps.ts`, `engine/player.ts` (play/pause/step/back/speed/scrub/keyboard).
-- Implement `ArrayView` (bars mode) with the full state-color language and swap choreography.
-- Implement **Bubble Sort** as the first `AlgoModule`, wired into a complete algorithm page:
-  viz + playback bar + synced code highlight + state panel + explanation.
+## Phase 0 — Engine Contract Spike
+**Goal: prove the animation data model. No product UI, no polish.**
 
-**Exit criteria:** Bubble sort plays, pauses, steps backward/forward, scrubs, and the code
-line highlight stays in sync at every speed. 60fps with 30 bars.
+Phase 0 answers "does this architecture stand up?", not "does the first page look
+complete." The project's core risk is whether the event protocol can support 50
+algorithms *and* arbitrary user code — so that contract gets built and tested first,
+against the smallest possible surface.
 
-## Phase 1 — Academy core (arrays universe)
-**Goal: the site is genuinely useful for array-based learning.**
+- Define the protocol types: `Frame` / `ModelOp` / `Annotation` / `EntityId` / `Location`
+  (`engine/protocol.ts`, exactly as specified in ARCHITECTURE.md).
+- Implement the pure reducer (`reduce.ts`) with snapshot checkpoints.
+- Implement minimal player: play / pause / next / previous — nothing else.
+- Implement one minimal `ArrayView` bars renderer (correct state colors, no choreography
+  polish).
+- Implement Bubble Sort as a real `AlgoModule` (full contract: input schema, edges,
+  oracle) — the first protocol fixture.
+- Write the remaining four **protocol fixtures** (Binary Search, Reverse Linked List,
+  Dijkstra, N-Queens) as headless generator + reducer tests — no renderers for them yet.
+- Tests: replay determinism, reverse-step correctness, scrub-equals-play, fixture
+  assertions.
 
-- Catalog page: category sections, glass cards, search + filters, difficulty dots.
-- `ArrayView` boxes mode, pointer chevrons, range brackets, window highlights.
-- Ship categories: **Sorting (8), Arrays & Two Pointers (10), Searching (4)** = algorithms 1–22.
-- Input controls: randomize (seeded) + edit input.
+**Exit criteria:**
+- Bubble Sort replays forward/backward deterministically from recorded Frames.
+- No DOM access from any algorithm code (enforced by the module being importable and
+  runnable inside Vitest/node).
+- The protocol expresses all five fixtures — compare, swap, mark/unmark, range/window,
+  links with left/right and weighted directed edges, grid cells, error flash — without
+  protocol changes pending.
+
+## Phase 0B — First Usable Algorithm Page
+**Goal: turn the proven engine into one complete, good-looking page.**
+
+- Design tokens (`tokens.css`), dark background + gradient blobs, glass panel component,
+  nav bar (Academy active; Exercise → "coming soon").
+- Playback speed control, scrubber, keyboard shortcuts (with input/editor focus scoping).
+- Swap choreography and glow polish per DESIGN.md; simplified rendering path at ≥ 2×.
+- Synced code highlight (Shiki), state panel, explanation section.
+- Bubble Sort page fully assembled in the algorithm-page layout.
+- Set real package name/title/favicon (replace scaffold's `scaf`).
+- CI: `typecheck` + `test` + `lint` + bundle gate (`size-limit`).
+
+**Exit criteria (measurable):**
+- Fixture: 30 bars, reversed input, Chromium latest stable on the dev machine, one full
+  1× playback: dropped-frame ratio < 5%, no long task > 50 ms during playback
+  (measured via Performance panel / `PerformanceObserver`, repeated 3 runs).
+- At 4×: simplified path active, playback remains coherent (cursor never outruns
+  animation completion).
+- `prefers-reduced-motion`: discrete state changes, no positional animation.
+- Academy route chunk < 250 KB gzip; Monaco absent from it.
+- Code-line highlight stays in sync at every speed and after scrubbing.
+
+## Phase 1A — Sorting (8 algos)
+- `ArrayView` bars mode hardened; multi-collection support (Counting/Radix buckets);
+  heap projection (tree + array strip) for Heap Sort.
+- Algorithms 1–8, each passing the registry content-schema suite and its edge inputs
+  (empty, single, duplicates, sorted, reversed).
+
+**Exit:** all 8 pages pass their ALGORITHMS.md "what lights up" rows; registry suite green.
+
+## Phase 1B — Arrays & Two Pointers (10 algos)
+- `ArrayView` boxes mode: pointer chevrons, range brackets, window highlights.
+- Algorithms 9–18.
+
+**Exit:** same bar as 1A, plus pointer/range semantics visually verified against fixtures.
+
+## Phase 1C — Searching + Catalog + Ship
+- Algorithms 19–22 (discard dimming, boundary squeeze).
+- Catalog page: category sections, glass cards, search, filters (category/difficulty),
+  difficulty-sort toggle.
+- Input controls on algo pages: seeded randomize + edit input (validated by input schema).
 - localStorage progress checkmarks.
 - Deploy publicly.
 
-**Exit criteria:** 22 algorithms animated via the shared engine, no one-off animation code;
-Lighthouse ≥ 90 on catalog.
+**Exit:** 22 algorithms live via the shared engine (zero one-off animation code);
+Lighthouse ≥ 90 on catalog; e2e smoke green.
 
-## Phase 2 — Academy complete (structures)
-**Goal: all 50 algorithms live.**
+## Phase 2A — Linear structures (8 algos)
+- `LinkedListView`, `StackQueueView` renderers.
+- Algorithms 23–30.
 
-- Renderers: `LinkedListView`, `StackQueueView`, `TreeView` (tidy layout), `GraphView`
-  (preset coordinates), `GridView`.
-- Ship categories: Linked List (4), Stack & Queue (4), Trees (7), Heap (2), Graphs (6),
-  DP (4), Backtracking (1) = algorithms 23–50.
-- Polish pass: captions/`note` text on steps, per-category page headers, empty/edge-case
-  inputs (already-sorted array, single node, disconnected graph).
+## Phase 2B — Trees, Heap, Graphs, DP, Backtracking (20 algos)
+- `TreeView` (tidy layout), `GraphView` (preset coordinates), `GridView`.
+- Algorithms 31–50.
+- Polish pass: captions (`note`) coverage, per-category headers.
 
-**Exit criteria:** all 50 pages pass their "What lights up" acceptance rows in ALGORITHMS.md.
+**Exit (2B):** all 50 pages pass their acceptance rows; registry suite validates all 50
+modules' content completeness.
 
 ## Phase 3 — Exercise MVP
 **Goal: write code, watch it move — even when wrong.**
 
-- Worker sandbox + instrumentation prelude (Proxy array, swap/compare/pointer helpers),
-  3s timeout, 50k step budget.
-- Monaco editor (lazy-loaded), problem statement pane, side-by-side replay of the user's run.
-- Test runner with pass/fail strip; click a failing case to load its recording.
-- Launch with **5 array exercises**: implement Bubble Sort, Binary Search, Two-Pointer
-  Two Sum, Reverse Array, Move Zeroes.
+- Sandbox per ARCHITECTURE.md: fresh worker per test case, network neutered
+  (`fetch`/XHR/WebSocket/EventSource/`importScripts` removed + CSP), streaming RawOp
+  batches so timeout keeps the partial recording, four limits (3 s wall / 200k ops /
+  50k frames / 5 MB).
+- Normalizer (`normalize.ts`) with adversarial unit suite.
+- Monaco (lazy chunk), problem pane, side-by-side replay, test runner with pass/fail
+  strip; failing case click-loads its recording.
+- Launch with 5 array exercises: Bubble Sort, Binary Search, Two-Pointer Two Sum,
+  Reverse Array, Move Zeroes.
 
-**Exit criteria:** intentionally-buggy submissions animate their wrong behavior;
-infinite loop shows truncated recording with a banner, tab never freezes.
+**Exit:** intentionally buggy submissions animate their wrong behavior; an infinite loop
+(both kinds: array-touching and pure-spin) yields a truncated-but-viewable recording and
+never freezes the tab; Academy bundle unchanged.
 
-## Phase 4 — Exercise grows + quality of life
-- More exercises across categories (target 20), each reusing an Academy renderer.
-- Hints system (progressive reveal), solution reveal after N attempts.
-- Shareable links encoding input state; algorithm-page deep links to the paired exercise.
-- Optional later: accounts/sync, more languages via WASM, spaced-repetition review queue.
+## Phase 4 — Growth
+- More exercises (target 20) reusing Academy renderers.
+- Hints (progressive reveal), solution reveal after N attempts.
+- Shareable input-state links; algo-page ↔ exercise deep links.
+- Optional: accounts/sync, more languages via WASM, spaced-repetition queue.
 
 ## Suggested first prompt for the builder AI
-> Read PLAN.md, DESIGN.md, ARCHITECTURE.md, ALGORITHMS.md, PHASES.md, DECISIONS.md.
-> Build Phase 0 exactly as specified. Do not invent alternative architectures: algorithms
-> are generators yielding Frames; renderers only consume Steps. Stop after Phase 0 exit
-> criteria and demonstrate them.
+> Read CLAUDE.md, PLAN.md, DESIGN.md, ARCHITECTURE.md, ALGORITHMS.md, PHASES.md,
+> DECISIONS.md. Build **Phase 0 only**, exactly as specified: protocol types, pure
+> reducer, minimal player, minimal ArrayView, Bubble Sort AlgoModule, and all five
+> protocol fixtures with their tests. Do not build product UI, do not add polish, do not
+> invent alternative architectures. Stop when Phase 0 exit criteria pass and demonstrate
+> them with the test suite.

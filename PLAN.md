@@ -32,9 +32,10 @@ fastest way to understand the bug.
 - Exercise appears in the nav from day one but shows a "Coming soon" page until Phase 3.
 
 ### Academy (Phase 1–2)
-- **Catalog page**: 50 algorithms in a grid of glass cards, grouped by pattern category
-  (Arrays & Two Pointers, Sorting, Searching, Linked List, Stack & Queue, Trees, Heap,
-  Graphs, Dynamic Programming, Backtracking, Greedy). Each category has its own accent color.
+- **Catalog page**: 50 algorithms in a grid of glass cards, grouped by pattern category —
+  10 populated categories (Arrays & Two Pointers, Sorting, Searching, Linked List,
+  Stack & Queue, Trees, Heap, Graphs, Dynamic Programming, Backtracking) plus Greedy
+  reserved in the design system for expansion. Each category has its own accent color.
 - **Algorithm page** for each algorithm:
   - Animated visualization panel (the star of the page) — data lights up and moves as the
     algorithm runs.
@@ -67,8 +68,10 @@ fastest way to understand the bug.
 ## Target audience
 - The site owner (learning algorithms) and any visitor. No login, instantly usable.
 
-## Success criteria for Phase 1
-- Academy live with at least the Sorting + Arrays categories fully animated (≈15 algorithms).
-- Every animation driven by the shared step-engine (see ARCHITECTURE.md) — no one-off
-  hand-coded animations, because Exercise will reuse the same renderer later.
-- Lighthouse performance ≥ 90 on the catalog page; animations at 60fps for arrays of 30 items.
+## Success criteria
+Phase scope and exit criteria live in **[PHASES.md](PHASES.md), the single source of
+truth** — numbers there win over any summary here. Headline: Phase 0 proves the engine
+contract with protocol fixtures before any product UI; Phases 1A–1C ship Sorting, Arrays,
+and Searching (algorithms 1–22) publicly; Phases 2A–2B complete all 50; Phase 3 adds
+Exercise. Every animation is driven by the shared step-engine (ARCHITECTURE.md) — no
+one-off hand-coded animations, because Exercise reuses the same renderers.

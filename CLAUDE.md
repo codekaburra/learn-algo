@@ -54,3 +54,10 @@ npm run dev      # dev server
 npm run build    # type-check + production build
 npm run preview  # serve the production build
 ```
+
+Phase 0B adds `typecheck`, `test` (Vitest), `test:e2e` (Playwright), and a `size-limit`
+bundle gate; once they exist, a branch merges only with all of them green.
+
+## Related files
+`AGENTS.md` is a pointer to this file for tools that auto-read that name — never
+duplicate content there (DECISIONS.md D-19).
