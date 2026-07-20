@@ -176,7 +176,7 @@ catalog *before* any algorithm is mass-produced:
 | Bubble Sort | array | compare/swap/mark-sorted, ranges, deterministic forward/backward replay |
 | Binary Search | array | discard marking, range squeeze, pointer semantics |
 | Reverse Linked List | list | link/unlink, pointer over nodes, node-kind locations |
-| Dijkstra | graph | weighted directed edges, edgeMark, vars (distance table), multi-collection (PQ strip) |
+| Dijkstra | graph | weighted directed edges, edgeMark/edgeUnmark, vars (distance table), multi-collection (PQ strip) |
 | N-Queens | grid | cell locations, place/remove, error flash, backtrack unwind |
 
 If the protocol cannot express one of these cleanly, **fix the protocol in Phase 0**,
