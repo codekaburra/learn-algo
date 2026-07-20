@@ -17,11 +17,9 @@ export class ArrayModel {
   col: CollectionId;
   ids: EntityId[]; // ids[i] = entity currently at index i
   values: Record<EntityId, Value> = {};
-  private prefix: string;
 
   constructor(col: CollectionId, values: Value[], prefix = col) {
     this.col = col;
-    this.prefix = prefix;
     this.ids = values.map((_, i) => `${prefix}-${i}`);
     values.forEach((v, i) => (this.values[this.ids[i]] = v));
   }

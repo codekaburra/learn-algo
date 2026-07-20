@@ -1,9 +1,20 @@
 import { describe, expect, it } from 'vitest';
 import { emptyViewState, orderedIndices, reduce, type ViewState } from '../engine/reduce';
 import { modules } from './registry';
-import type { AlgoModule } from './types';
+import type { AlgoModule, Category } from './types';
 
 const INDEX_RENDERERS = new Set(['array-bars', 'array-boxes', 'heap-strip']);
+
+type EdgeName = keyof AlgoModule['input']['edges'];
+
+// Acceptance edge cases a module MUST declare, keyed by category. Sorting has to
+// prove all five; array/search modules must at least cover the single-element case.
+// Categories absent here have algorithm-specific inputs and declare edges ad hoc.
+const REQUIRED_EDGES: Partial<Record<Category, EdgeName[]>> = {
+  Sorting: ['empty', 'single', 'duplicates', 'sorted', 'reversed'],
+  'Arrays & Two Pointers': ['single'],
+  Searching: ['single'],
+};
 
 function replay(mod: AlgoModule, input: unknown): ViewState {
   let s = emptyViewState();
@@ -52,6 +63,16 @@ describe('registry content-schema', () => {
             expect(f.line).toBeGreaterThanOrEqual(1);
             expect(f.line).toBeLessThanOrEqual(lineCount);
           }
+        }
+      });
+
+      it('declares its required acceptance edge cases', () => {
+        const required = REQUIRED_EDGES[mod.meta.category] ?? [];
+        for (const name of required) {
+          expect(
+            mod.input.edges[name],
+            `${mod.meta.slug} must declare the '${String(name)}' edge case`,
+          ).toBeDefined();
         }
       });
 
