@@ -65,6 +65,36 @@ export function frame(f: Frame): Frame {
   return f;
 }
 
+// A collection whose length changes over time (deque, stack, queue). Rebuilds the
+// entity set to match a target value list — simple and correct for teaching strips.
+export class DynamicStrip {
+  col: CollectionId;
+  private shape: 'array' | 'stack' | 'queue';
+  private ids: EntityId[] = [];
+  private seq = 0;
+
+  constructor(col: CollectionId, shape: 'array' | 'stack' | 'queue' = 'array') {
+    this.col = col;
+    this.shape = shape;
+  }
+
+  setupOps(label?: string): ModelOp[] {
+    return [{ op: 'collection', id: this.col, shape: this.shape, label }];
+  }
+
+  syncOps(values: Value[]): ModelOp[] {
+    const ops: ModelOp[] = [];
+    for (const id of this.ids) ops.push({ op: 'destroy', id });
+    this.ids = [];
+    values.forEach((v, i) => {
+      const id = `${this.col}-${this.seq++}`;
+      this.ids.push(id);
+      ops.push({ op: 'create', id, value: v, at: idx(this.col, i) });
+    });
+    return ops;
+  }
+}
+
 export function flash(
   targets: (EntityId | string)[],
   state: 'active' | 'compare' | 'error',
