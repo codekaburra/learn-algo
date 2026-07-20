@@ -21,7 +21,10 @@ import slidingWindowMax from './arrays/sliding-window-max';
 import longestSubstring from './arrays/longest-substring';
 import prefixSum from './arrays/prefix-sum';
 import kadane from './arrays/kadane';
+import linearSearch from './searching/linear-search';
 import binarySearch from './searching/binary-search';
+import firstLast from './searching/first-last';
+import rotatedSearch from './searching/rotated-search';
 import reverseLinkedList from './linked-list/reverse-linked-list';
 import dijkstra from './graphs/dijkstra';
 import nQueens from './backtracking/n-queens';
@@ -59,7 +62,10 @@ export const modules: AlgoModule[] = [
   heap,
   counting,
   radix,
+  linearSearch,
   binarySearch,
+  firstLast,
+  rotatedSearch,
   reverseLinkedList,
   dijkstra,
   nQueens,
