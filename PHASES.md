@@ -59,12 +59,18 @@ against the smallest possible surface.
 - Code-line highlight stays in sync at every speed and after scrubbing.
 
 ## Phase 1A — Sorting (8 algos)
-- `ArrayView` bars mode hardened; multi-collection support (Counting/Radix buckets);
-  heap projection (tree + array strip) for Heap Sort.
+- `ArrayView` bars mode hardened; multi-collection support (Counting/Radix buckets).
+- Heap Sort's tree strip is a **`HeapStripView`: the minimal projection only** — fixed
+  complete-binary-tree layout computed from array indices (parent/child positions are
+  arithmetic, no layout algorithm), nodes + edges + state colors, nothing else. It is
+  *not* the start of `TreeView` (no arbitrary shapes, no insert/remove relayout, no
+  left/right links — those arrive in Phase 2B). If a requirement can't be met without
+  real TreeView capability, it moves to 2B rather than growing this component.
 - Algorithms 1–8, each passing the registry content-schema suite and its edge inputs
   (empty, single, duplicates, sorted, reversed).
 
-**Exit:** all 8 pages pass their ALGORITHMS.md "what lights up" rows; registry suite green.
+**Exit:** all 8 pages pass their ALGORITHMS.md "what lights up" rows; registry suite
+green; `HeapStripView` contains no general tree-layout code.
 
 ## Phase 1B — Arrays & Two Pointers (10 algos)
 - `ArrayView` boxes mode: pointer chevrons, range brackets, window highlights.
@@ -87,30 +93,65 @@ Lighthouse ≥ 90 on catalog; e2e smoke green.
 - `LinkedListView`, `StackQueueView` renderers.
 - Algorithms 23–30.
 
-## Phase 2B — Trees, Heap, Graphs, DP, Backtracking (20 algos)
-- `TreeView` (tidy layout), `GraphView` (preset coordinates), `GridView`.
-- Algorithms 31–50.
-- Polish pass: captions (`note`) coverage, per-category headers.
+**Exit:** all 8 linear-structure pages pass their acceptance rows; `LinkedListView` and
+`StackQueueView` fixture tests green; no protocol changes were required (if one was,
+stop and log the decision before proceeding).
 
-**Exit (2B):** all 50 pages pass their acceptance rows; registry suite validates all 50
-modules' content completeness.
+## Phase 2B — Trees & Heap (9 algos)
+- `TreeView` proper: tidy layout (Reingold–Tilford), arbitrary shapes, left/right links,
+  insert/remove relayout. `HeapStripView` retired or absorbed as a TreeView mode.
+- Algorithms 31–39.
 
-## Phase 3 — Exercise MVP
-**Goal: write code, watch it move — even when wrong.**
+**Exit:** all 9 pages pass their acceptance rows; TreeView fixture green; Heap pages show
+tree + array strip in sync (same entities, both views).
 
+## Phase 2C — Graphs (6 algos)
+- `GraphView` (preset coordinates, directed/weighted edges, edgeMark/edgeUnmark) and
+  `GridView` (for Islands).
+- Algorithms 40–45.
+
+**Exit:** all 6 pages pass their acceptance rows; Dijkstra page exercises edge
+mark/unmark with no stale edge state after replay/scrub.
+
+## Phase 2D — DP + Backtracking + Academy complete (5 algos)
+- `GridView` completed (cell dependencies/arrows for DP traceback).
+- Algorithms 46–50.
+- Final polish pass across all 50: captions (`note`) coverage, per-category headers.
+
+**Exit:** all 50 pages pass their acceptance rows; registry suite validates all 50
+modules' content completeness; e2e smoke green.
+
+## Phase 3 — Exercise (write code, watch it move — even when wrong)
+
+### Phase 3A — Sandbox + Normalizer (no UI)
 - Sandbox per ARCHITECTURE.md: fresh worker per test case, network neutered
   (`fetch`/XHR/WebSocket/EventSource/`importScripts` removed + CSP), streaming RawOp
   batches so timeout keeps the partial recording, four limits (3 s wall / 200k ops /
   50k frames / 5 MB).
-- Normalizer (`normalize.ts`) with adversarial unit suite.
-- Monaco (lazy chunk), problem pane, side-by-side replay, test runner with pass/fail
-  strip; failing case click-loads its recording.
-- Launch with 5 array exercises: Bubble Sort, Binary Search, Two-Pointer Two Sum,
-  Reverse Array, Move Zeroes.
+- Normalizer (`normalize.ts`) with adversarial unit suite (duplicates, self-swaps,
+  out-of-bounds, splice-like shifts).
+- No Monaco, no product UI — a debug harness page that runs pasted code is enough.
 
-**Exit:** intentionally buggy submissions animate their wrong behavior; an infinite loop
-(both kinds: array-touching and pure-spin) yields a truncated-but-viewable recording and
-never freezes the tab; Academy bundle unchanged.
+**Exit (all verified headlessly or via the harness):** buggy reference submissions
+produce replayable recordings; both infinite-loop kinds (array-touching → op limit,
+pure-spin → wall clock) yield truncated-but-viewable recordings without freezing the
+tab; normalizer suite green.
+
+### Phase 3B — Exercise UI Shell
+- Monaco as a lazy chunk, problem pane, side-by-side replay using the Academy player and
+  renderers, test runner with pass/fail strip; failing case click-loads its recording.
+- One placeholder exercise wired end-to-end to prove the shell.
+
+**Exit:** full write→run→watch→test loop works on the placeholder; Academy route chunk
+unchanged (bundle gate proves Monaco stayed out).
+
+### Phase 3C — First 5 Exercises
+- Bubble Sort, Binary Search, Two-Pointer Two Sum, Reverse Array, Move Zeroes —
+  each with statement, starter code, test cases, and an intentionally-buggy reference
+  submission in tests proving its wrongness animates.
+
+**Exit:** all 5 exercises pass the loop above; wrong-code animations verified per
+exercise.
 
 ## Phase 4 — Growth
 - More exercises (target 20) reusing Academy renderers.

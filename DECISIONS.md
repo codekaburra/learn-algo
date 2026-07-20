@@ -128,3 +128,14 @@ language; `discard` had no token at all.
 Rationale: the two files were near-identical copies and would silently drift. One
 canonical file, one pointer — tools that auto-read either name still land on the same
 content.
+
+**D-20 · (Second review pass, 2026-07-20) Phase 2B split into 2B Trees & Heap / 2C
+Graphs / 2D DP + Backtracking; Phase 3 split into 3A Sandbox + Normalizer / 3B UI Shell /
+3C First 5 Exercises. Heap Sort in Phase 1A uses a minimal `HeapStripView` (arithmetic
+complete-binary-tree layout only), explicitly not an early TreeView. `edgeUnmark` added
+to the protocol so every persistent annotation has an inverse.**
+Rationale: 2B at 20 algos + three renderers concentrated too much renderer risk in one
+branch; Phase 3 was a mini-product bundling sandbox correctness with editor UI. The
+HeapStripView constraint stops TreeView capability from leaking into 1A ungoverned.
+Without `edgeUnmark`, Dijkstra-style path tracing accumulates stale edge state — the
+Dijkstra fixture must exercise it.

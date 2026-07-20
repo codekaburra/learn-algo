@@ -72,6 +72,6 @@ fastest way to understand the bug.
 Phase scope and exit criteria live in **[PHASES.md](PHASES.md), the single source of
 truth** — numbers there win over any summary here. Headline: Phase 0 proves the engine
 contract with protocol fixtures before any product UI; Phases 1A–1C ship Sorting, Arrays,
-and Searching (algorithms 1–22) publicly; Phases 2A–2B complete all 50; Phase 3 adds
+and Searching (algorithms 1–22) publicly; Phases 2A–2D complete all 50; Phases 3A–3C add
 Exercise. Every animation is driven by the shared step-engine (ARCHITECTURE.md) — no
 one-off hand-coded animations, because Exercise reuses the same renderers.

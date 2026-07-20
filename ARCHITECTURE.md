@@ -114,6 +114,7 @@ type Annotation =
   | { an: 'unmark';  target: EntityId | NodeId }                     // restore idle
   | { an: 'flash';   targets: (EntityId | NodeId)[]; state: 'active' | 'compare' | 'error' } // transient, auto-clears next frame
   | { an: 'edgeMark';   from: NodeId; to: NodeId; state: MarkState } // path tracing
+  | { an: 'edgeUnmark'; from: NodeId; to: NodeId }                   // restore edge to idle
   | { an: 'pointer'; name: string; at: Location | null }             // null removes the pointer
   | { an: 'range';   name: string; col: CollectionId; from: number; to: number } // inclusive; re-emit to move
   | { an: 'clearRange'; name: string }
@@ -122,7 +123,10 @@ type Annotation =
 
 Every `MarkState`/flash state maps 1:1 to a DESIGN.md state token, including `discard`
 and `error`. Ambiguities from v1 are resolved: ranges are removed with `clearRange`
-(not `to: null`), marks are reversed with `unmark`.
+(not `to: null`), marks are reversed with `unmark`, edge marks with `edgeUnmark` —
+every persistent annotation has an explicit inverse, so graph animations (Dijkstra
+relaxing then abandoning a tentative edge) never accumulate stale state. The Dijkstra
+fixture must exercise `edgeUnmark`.
 
 ### Exercise RawOps (recorded, then normalized)
 
