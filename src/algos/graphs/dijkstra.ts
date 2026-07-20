@@ -107,10 +107,34 @@ function* run(input: unknown): Generator<Frame> {
 
   const visited = new Set<string>();
   // simple array-based frontier for teaching clarity
-  let frontier: string[] = [src];
+  const frontier: string[] = [src];
+
+  // Rebuild the priority-queue strip to match the current frontier: destroy the
+  // previous entities and recreate one per frontier entry at contiguous indices,
+  // ordered by tentative distance. This keeps the strip shrinking on pop and never
+  // skips a slot (a plain create-on-push leaks entities and leaves index gaps).
+  let pqIds: string[] = [];
   let pqSeq = 0;
+  const pqSyncOps = (): ModelOp[] => {
+    const ops: ModelOp[] = pqIds.map((id) => ({ op: 'destroy', id }));
+    pqIds = [];
+    [...frontier]
+      .sort((a, b) => dist[a] - dist[b])
+      .forEach((v, i) => {
+        const id = `pq-${pqSeq++}`;
+        pqIds.push(id);
+        ops.push({
+          op: 'create',
+          id,
+          value: `${v}:${dist[v] === Infinity ? '∞' : dist[v]}`,
+          at: idx('pq', i),
+        });
+      });
+    return ops;
+  };
+
   yield {
-    ops: [{ op: 'create', id: `pq-${pqSeq++}`, value: `${src}:0`, at: idx('pq', 0) }],
+    ops: pqSyncOps(),
     annotate: [{ an: 'flash', targets: [src], state: 'active' }, vars({ ...distString(dist) })],
     line: 4,
     note: `Push source ${src} with distance 0`,
@@ -123,6 +147,7 @@ function* run(input: unknown): Generator<Frame> {
     visited.add(u);
 
     yield {
+      ops: pqSyncOps(),
       annotate: [
         { an: 'flash', targets: [u], state: 'active' },
         { an: 'mark', target: u, state: 'visited' },
@@ -155,7 +180,7 @@ function* run(input: unknown): Generator<Frame> {
         annotate.push(vars({ ...distString(dist), updated: `${v}=${nd}` }));
         frontier.push(v);
         yield {
-          ops: [{ op: 'create', id: `pq-${pqSeq++}`, value: `${v}:${nd}`, at: idx('pq', pqSeq) }],
+          ops: pqSyncOps(),
           annotate,
           line: 11,
           note: `Better path to ${v}: dist = ${nd}, parent = ${u}`,
