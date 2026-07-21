@@ -1,6 +1,7 @@
 import type { ViewState } from '../engine/reduce';
 import type { AlgoModule, RendererKind } from '../algos/types';
 import ArrayView from './ArrayView';
+import HeapStripView from './HeapStripView';
 
 interface Props {
   module: AlgoModule;
@@ -39,6 +40,8 @@ function renderOne(
       return <ArrayView state={state} col={col} mode="bars" simplified={simplified} />;
     case 'array-boxes':
       return <ArrayView state={state} col={col} mode="boxes" simplified={simplified} />;
+    case 'heap-strip':
+      return <HeapStripView state={state} col={col} simplified={simplified} />;
     case 'stack-queue':
       // Small strip fallback until StackQueueView lands (Phase 2A).
       return <ArrayView state={state} col={col} mode="boxes" simplified={simplified} height={120} />;
