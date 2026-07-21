@@ -60,7 +60,12 @@ function reference(input: GraphInput): Record<string, number> {
   while (visited.size < nodes.length) {
     let u: string | null = null;
     let best = Infinity;
-    for (const v of nodes) if (!visited.has(v) && dist[v] < best) (best = dist[v]), (u = v);
+    for (const v of nodes) {
+      if (!visited.has(v) && dist[v] < best) {
+        best = dist[v];
+        u = v;
+      }
+    }
     if (u === null) break;
     visited.add(u);
     for (const [v, w] of adj[u]) if (dist[u] + w < dist[v]) dist[v] = dist[u] + w;

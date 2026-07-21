@@ -139,3 +139,16 @@ branch; Phase 3 was a mini-product bundling sandbox correctness with editor UI. 
 HeapStripView constraint stops TreeView capability from leaking into 1A ungoverned.
 Without `edgeUnmark`, Dijkstra-style path tracing accumulates stale edge state — the
 Dijkstra fixture must exercise it.
+
+**D-21 · (Implementation, 2026-07-20) UI chrome uses plain CSS with the design tokens
+(not Tailwind); element motion uses CSS transitions on SVG `transform` (not Framer
+Motion); Academy code display uses a small built-in JS tokenizer (not Shiki).**
+Rationale: the whole product was built in a single pass, and each pinned dependency it
+replaces (Tailwind, Framer Motion, Shiki) added build/config surface without changing the
+architecture — algorithms still never touch the DOM, renderers are still pure functions
+of ViewState, the state-color language still lives once in `tokens.css`. The token CSS is
+the single styling source the pinned stack was meant to protect, and CSS transforms keep
+the Academy route chunk small (the bundle gate's intent). Revisit if we hit motion
+choreography that CSS transitions cannot express, or need Monaco-grade highlighting in
+Academy. Alternatives kept available: the swap in each case is isolated to one component
+(`CodePanel`, the renderers, `styles/`), so adopting the pinned library later is local.
