@@ -32,6 +32,8 @@ jobs:
       # routes like /learn-algo/academy/bubble-sort still load the app.
       - run: cp dist/index.html dist/404.html
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - uses: actions/upload-pages-artifact@v4
         with:
           path: dist
