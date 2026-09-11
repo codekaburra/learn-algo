@@ -8,6 +8,15 @@ when it is wrong.
 The product direction is dark mode, colorful algorithm states, glassmorphism UI, and a
 fully static deployment. No backend, no accounts, no light mode for v1.
 
+## Live site
+
+Academy is published as a GitHub Pages site:
+
+**https://codekaburra.github.io/learn-algo/**
+
+The Pages build sets Vite `base` to `/learn-algo/` (D-22). Local `npm run dev` still
+serves at `/`.
+
 ## Current status
 
 The repo is currently in the planning/scaffold stage. The Vite React TypeScript scaffold

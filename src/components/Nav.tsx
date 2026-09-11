@@ -17,7 +17,7 @@ export default function Nav() {
       </div>
       <div className="spacer" />
       <a
-        href="https://github.com"
+        href="https://github.com/codekaburra/learn-algo"
         target="_blank"
         rel="noreferrer"
         className="btn icon"
