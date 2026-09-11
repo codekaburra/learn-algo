@@ -152,3 +152,13 @@ the Academy route chunk small (the bundle gate's intent). Revisit if we hit moti
 choreography that CSS transitions cannot express, or need Monaco-grade highlighting in
 Academy. Alternatives kept available: the swap in each case is isolated to one component
 (`CodePanel`, the renderers, `styles/`), so adopting the pinned library later is local.
+
+**D-22 · (2026-09-11) Public deploy is GitHub Pages from a GitHub Actions workflow;
+Vite `base` is `/learn-algo/` only on that build, and `BrowserRouter` uses
+`import.meta.env.BASE_URL` as its basename.**
+Rationale: the product is already a static Vite site (D-4). A project Pages URL
+(`https://<user>.github.io/learn-algo/`) requires the asset prefix and the router
+basename, otherwise deep links 404 and JS/CSS load from `/assets` on the user site.
+`404.html` is a copy of `index.html` so client routes still boot the SPA.
+Rejected: HashRouter (uglier URLs, unnecessary once 404 fallback exists); deploying
+from a `gh-pages` branch by hand (Actions is the current GitHub Pages source).
